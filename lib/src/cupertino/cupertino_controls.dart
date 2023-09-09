@@ -759,8 +759,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
     controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
     log("Reversing the video with Speed : $selectedSpeed",
         name: "Video Player");
-    Future.delayed(const Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       controller.setPlaybackSpeed(selectedSpeed);
+      log("Speed has been restored  ");
     });
   }
 
@@ -773,8 +774,10 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
     log("Forwarding the video with Speed : $selectedSpeed",
         name: "Video Player");
-    Future.delayed(const Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       controller.setPlaybackSpeed(selectedSpeed);
+
+      log("Speed has been restored ");
     });
   }
 
