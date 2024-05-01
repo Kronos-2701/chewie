@@ -22,7 +22,7 @@ class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
     required this.backgroundColor,
     required this.iconColor,
-    this.allowSkippingInLiveMode = false,
+    required this.allowSkippingInLiveMode,
     this.showPlayButton = true,
     super.key,
   });
@@ -766,10 +766,12 @@ class _CupertinoControlsState extends State<CupertinoControls>
       log("Skipping back in live mode ");
     }
     _cancelAndRestartTimer();
-    final beginning = Duration.zero.inMilliseconds;
+
     final skip =
         (_latestValue.position - const Duration(seconds: 15)).inMilliseconds;
-    await controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
+
+    log("Current : ${_latestValue.position} \nSkipping to  : $skip\n Total : ${_latestValue.duration.inMinutes.toString()}");
+    await controller.seekTo(Duration(milliseconds: skip));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after reversing the video as reversing is an asynchronous function
     if (!widget.allowSkippingInLiveMode) {
@@ -784,10 +786,11 @@ class _CupertinoControlsState extends State<CupertinoControls>
       log("Skipping forward in live mode ");
     }
     _cancelAndRestartTimer();
-    final end = _latestValue.duration.inMilliseconds;
     final skip =
         (_latestValue.position + const Duration(seconds: 15)).inMilliseconds;
-    await controller.seekTo(Duration(milliseconds: math.min(skip, end)));
+    await controller.seekTo(Duration(milliseconds: skip));
+
+    log("Current : ${_latestValue.position} \nSkipping to  : $skip Total Duration : ${_latestValue.duration.inMinutes.toString()}");
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after forwarding the video as forwaring is an asynchronous function
     if (!widget.allowSkippingInLiveMode) {
