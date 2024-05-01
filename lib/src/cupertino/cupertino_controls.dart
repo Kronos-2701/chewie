@@ -22,10 +22,11 @@ class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
     required this.backgroundColor,
     required this.iconColor,
+    this.allowSkippingInLiveMode = false,
     this.showPlayButton = true,
     super.key,
   });
-
+  final bool allowSkippingInLiveMode;
   final Color backgroundColor;
   final Color iconColor;
   final bool showPlayButton;
@@ -266,13 +267,22 @@ class _CupertinoControlsState extends State<CupertinoControls>
                 height: barHeight,
                 color: backgroundColor,
                 child: chewieController.isLive
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          _buildPlayPause(controller, iconColor, barHeight),
-                          _buildLive(iconColor),
-                        ],
-                      )
+                    ? widget.allowSkippingInLiveMode
+                        ? Row(children: <Widget>[
+                            _buildSkipBack(iconColor, barHeight),
+                            _buildPlayPause(controller, iconColor, barHeight),
+                            _buildSkipForward(iconColor, barHeight),
+                            _buildPosition(iconColor),
+                            _buildProgressBar(),
+                            _buildRemaining(iconColor),
+                          ])
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              _buildPlayPause(controller, iconColor, barHeight),
+                              _buildLive(iconColor),
+                            ],
+                          )
                     : Row(
                         children: <Widget>[
                           _buildSkipBack(iconColor, barHeight),
@@ -752,7 +762,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Future<void> _skipBack() async {
-    if (_chewieController?.isLive ?? false) {
+    if (widget.allowSkippingInLiveMode) {
       log("Skipping back in live mode ");
     }
     _cancelAndRestartTimer();
@@ -762,7 +772,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     await controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after reversing the video as reversing is an asynchronous function
-    if (_chewieController?.isLive ?? true) {
+    if (!widget.allowSkippingInLiveMode) {
       Future.delayed(const Duration(milliseconds: 1000), () {
         controller.setPlaybackSpeed(selectedSpeed);
       });
@@ -770,7 +780,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Future<void> _skipForward() async {
-    if (_chewieController?.isLive ?? false) {
+    if (widget.allowSkippingInLiveMode) {
       log("Skipping forward in live mode ");
     }
     _cancelAndRestartTimer();
@@ -780,7 +790,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     await controller.seekTo(Duration(milliseconds: math.min(skip, end)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after forwarding the video as forwaring is an asynchronous function
-    if (_chewieController?.isLive ?? true) {
+    if (!widget.allowSkippingInLiveMode) {
       Future.delayed(const Duration(milliseconds: 1000), () {
         controller.setPlaybackSpeed(selectedSpeed);
       });

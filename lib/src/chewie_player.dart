@@ -25,14 +25,14 @@ typedef ChewieRoutePageBuilder = Widget Function(
 /// `video_player` is pretty low level. Chewie wraps it in a friendly skin to
 /// make it easy to use!
 class Chewie extends StatefulWidget {
-  const Chewie({
-    super.key,
-    required this.controller,
-  });
+  const Chewie(
+      {super.key,
+      required this.controller,
+      this.allowSkippingInLiveMode = false});
 
   /// The [ChewieController]
   final ChewieController controller;
-
+  final bool allowSkippingInLiveMode;
   @override
   ChewieState createState() {
     return ChewieState();
@@ -89,7 +89,8 @@ class ChewieState extends State<Chewie> {
       controller: widget.controller,
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
-        builder: (context, w) => const PlayerWithControls(),
+        builder: (context, w) => PlayerWithControls(
+            allowSkippingInLiveMode: widget.allowSkippingInLiveMode),
       ),
     );
   }
@@ -132,7 +133,8 @@ class ChewieState extends State<Chewie> {
       controller: widget.controller,
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
-        builder: (context, w) => const PlayerWithControls(),
+        builder: (context, w) => PlayerWithControls(
+            allowSkippingInLiveMode: widget.allowSkippingInLiveMode),
       ),
     );
 
