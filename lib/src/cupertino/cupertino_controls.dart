@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -751,6 +752,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Future<void> _skipBack() async {
+    if (_chewieController!.isLive) {
+      log("Skipping back in live mode ");
+    }
     _cancelAndRestartTimer();
     final beginning = Duration.zero.inMilliseconds;
     final skip =
@@ -764,6 +768,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Future<void> _skipForward() async {
+    if (_chewieController!.isLive) {
+      log("Skipping forward in live mode ");
+    }
     _cancelAndRestartTimer();
     final end = _latestValue.duration.inMilliseconds;
     final skip =
@@ -771,9 +778,11 @@ class _CupertinoControlsState extends State<CupertinoControls>
     await controller.seekTo(Duration(milliseconds: math.min(skip, end)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after forwarding the video as forwaring is an asynchronous function
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      controller.setPlaybackSpeed(selectedSpeed);
-    });
+    if (!_chewieController!.isLive) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        controller.setPlaybackSpeed(selectedSpeed);
+      });
+    }
   }
 
   void _startHideTimer() {
