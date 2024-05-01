@@ -752,7 +752,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Future<void> _skipBack() async {
-    if (_chewieController!.isLive) {
+    if (_chewieController?.isLive ?? false) {
       log("Skipping back in live mode ");
     }
     _cancelAndRestartTimer();
@@ -762,13 +762,15 @@ class _CupertinoControlsState extends State<CupertinoControls>
     await controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after reversing the video as reversing is an asynchronous function
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      controller.setPlaybackSpeed(selectedSpeed);
-    });
+    if (_chewieController?.isLive ?? true) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        controller.setPlaybackSpeed(selectedSpeed);
+      });
+    }
   }
 
   Future<void> _skipForward() async {
-    if (_chewieController!.isLive) {
+    if (_chewieController?.isLive ?? false) {
       log("Skipping forward in live mode ");
     }
     _cancelAndRestartTimer();
@@ -778,7 +780,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     await controller.seekTo(Duration(milliseconds: math.min(skip, end)));
     // Restoring the video speed to selected speed
     // A delay of 1 second is added to ensure a smooth transition of speed after forwarding the video as forwaring is an asynchronous function
-    if (!_chewieController!.isLive) {
+    if (_chewieController?.isLive ?? true) {
       Future.delayed(const Duration(milliseconds: 1000), () {
         controller.setPlaybackSpeed(selectedSpeed);
       });
